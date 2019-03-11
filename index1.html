@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>蔡元培奖学金二维码生成</title>
+    <meta charset="utf-8"/>
+    <!--<script src="qrcode.js"></script>-->
+    <script type="text/javascript" src="qrcode.js" ></script>
+    <script type="text/javascript" src="jquery.js" ></script>
+    <style>
+    	*{
+    		margin: 0;
+    		padding: 0;
+    	}
+    	
+    	
+    	
+        #main{
+        	display: flex;
+        	margin-top: 20px;
+        	
+        }
+        .main-cont{
+        	display: flex;
+        	margin-left: 20px;
+        }
+        #qrcode{
+        	padding-top: 25px;
+        }
+         #qrcode img{
+         	margin-bottom: 25px;
+         	margin-left: 25px;
+
+         	float: left;
+         }
+         #width{
+         	width: 50px;
+         }
+         #height{
+         	width: 50px;
+         }
+         #codeNum{
+         	width: 50px;
+         }
+         #make{
+         	width: 50px;
+         	height: 25px;
+         	text-align: center;
+         	line-height: 25px;
+         	font-size: 14px;
+         	border-radius: 10px;
+         	margin-left: 20px;
+         	background: #AEEEEE;
+         	cursor: pointer;
+         }
+         #save{
+         	width: 50px;
+         	height: 25px;
+         	text-align: center;
+         	line-height: 25px;
+         	font-size: 14px;
+         	border-radius: 10px;
+         	margin-left: 20px;
+         	background: #FFEC8B;
+         	cursor: pointer;
+         }
+         .footer {
+			position: fixed;
+			bottom: 0;
+			width: 100%;
+			height: 20px;
+			text-align: center;
+			background-color: darkgrey;
+			color: white;
+			font-size: 13px;
+			font-family: "微软雅黑";
+		}
+    </style>
+</head>
+<body>
+	<div id="main">
+		<div class="main-cont">
+			<div>宽：</div>
+			<input type="text" id="width"/>
+		</div>
+		<div class="main-cont">
+			<div>高：</div>
+			<input type="text" id="height"/>
+		</div>
+		<div class="main-cont">
+			<div>生成数量：</div>
+			<input type="text" id="codeNum"/>
+		</div>
+		<div id="make">
+			生成
+		</div>
+		<div id="save">
+			保存
+		</div>
+			
+	</div>
+
+	<div id="qrcode">
+	</div>
+	
+	<div class="footer" style="">Copyright © 疯鸟网络工作室 2016-2018 </div>
+
+<script>
+	var make = document.getElementById('make');
+	var arr=[];
+	make.onclick = function(){
+		var width = document.getElementById('width').value;
+		var height = document.getElementById('height').value;
+		var codeNum = document.getElementById('codeNum').value;
+		var qrcode = document.getElementById("qrcode");
+		arr=[];
+		qrcode.innerHTML = "";
+        for(i = 0 ; i < 40 ; i ++)
+        {
+        	var code = Math.random().toString(36).substr(2);
+        	var qrcode = new QRCode(document.getElementById("qrcode"), {
+	            width : width,//设置宽高
+	            height : height
+       	 	});
+       	 	qrcode.makeCode("http://www.sxscott.com/vote?code=" + code);
+       	 	arr[i]=code;
+        }
+        alert('生成完毕，请务必确认打印后保存');
+//  	console.log(arr);
+	}
+	
+	var save = document.getElementById('save');
+	save.onclick = function(){
+		console.log(arr)
+		if(arr.length == 0){
+			alert('数据为空，请生成并打印后再保存');
+		}
+		$.ajax({
+		    url:"http://192.168.1.109:8080/crazyBird-admin/vote/insertCode",    //请求的url地址
+		    dataType:"json",   //返回格式为json
+		    async:true,//请求是否异步，默认为异步，这也是ajax重要特性
+		    data:{
+		    	param:arr
+		    },    //参数值,键值对
+		    type:"POST",   //请求方式
+		    traditional:true,
+		    beforeSend:function(){
+		    },
+		    success:function(req){
+		    	if(req.code == 200){
+		    		alert('保存成功')
+		    	}else{
+		    		alert('保存失败')
+		    	}
+		    },
+		    complete:function(){
+		        //请求完成的处理
+		    },
+		    error:function(){
+		        //请求出错处理
+		    }
+		});
+	}
+
+
+
+</script>
+</body>
+</html>
